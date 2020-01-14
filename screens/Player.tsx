@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { HamletPlaylist } from '../providers';
 
+import { Amoled } from '../themes';
+
 export default class Player extends Component {
   state = {
     isPlaying: false,
@@ -154,19 +156,19 @@ export default class Player extends Component {
       <View style={styles.container}>
         <Image
           style={styles.albumCover}
-          source={{uri: 'http://www.archive.org/download/LibrivoxCdCoverArt8/hamlet_1104.jpg'}}/>
+          source={{uri: '../assets/images/default-album-art.png'}}/>
 
         <View style={styles.controls}>
           <TouchableOpacity style={styles.control} onPress={this.handlePreviousTrack}>
-            <Ionicons name='ios-skip-backward' size={48} color='#444'/>
+            <Ionicons name='ios-skip-backward' size={Amoled.icon.large} color={Amoled.color.accent}/>
           </TouchableOpacity>
           <TouchableOpacity style={styles.control} onPress={this.handlePlayPause}>
             {this.state.isPlaying 
-              ? (<Ionicons name='ios-pause' size={48} color='#444'/>)
-              : (<Ionicons name='ios-play-circle' size={48} color='#444'/>)}
+              ? (<Ionicons name='ios-pause' size={Amoled.icon.large} color={Amoled.color.accent}/>)
+              : (<Ionicons name='ios-play-circle' size={Amoled.icon.large} color={Amoled.color.accent}/>)}
           </TouchableOpacity>
           <TouchableOpacity style={styles.control} onPress={this.handleNextTrack}>
-            <Ionicons name='ios-skip-forward' size={48} color='#444'/>
+            <Ionicons name='ios-skip-forward' size={Amoled.icon.large} color={Amoled.color.accent}/>
           </TouchableOpacity>
         </View>
         {this.renderFileInfo()}
@@ -178,7 +180,7 @@ export default class Player extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Amoled.color.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -187,21 +189,22 @@ const styles = StyleSheet.create({
     height: 250
   },
   trackInfo: {
-    padding: 40,
-    backgroundColor: '#fff'
+    padding: 30,
+    backgroundColor: Amoled.color.primary,
   },
   trackInfoText: {
     textAlign: 'center',
     flexWrap: 'wrap',
-    color: '#550088'
+    color: Amoled.color.onPrimary,
   },
   largeText: {
-    fontSize: 22
+    fontSize: Amoled.font.large
   },
   smallText: {
-    fontSize: 16
+    fontSize: Amoled.font.regular
   },
   controls: {
+    padding: 10,
     flexDirection: 'row'
   },
   control: {
