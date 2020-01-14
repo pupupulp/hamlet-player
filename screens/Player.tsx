@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import { HamletPlaylist } from '../providers';
 
-import { Amoled } from '../themes';
+import theme from '../themes/Amoled';
 
 export default class Player extends Component {
   state = {
@@ -13,7 +13,8 @@ export default class Player extends Component {
     playbackInstance: null,
     currentTrack: 0,
     volume: 1.0,
-    isBuffering: false
+    isBuffering: false,
+    playlist: HamletPlaylist
   }
 
   async componentDidMount() {
@@ -38,13 +39,14 @@ export default class Player extends Component {
     const {
       currentTrack,
       isPlaying,
-      volume
+      volume,
+      playlist
     } = this.state;
 
     try {
       const playbackInstance = new Audio.Sound();
       const source = {
-        uri: HamletPlaylist[currentTrack].uri
+        uri: playlist[currentTrack].uri
       };
 
       const status = {
@@ -69,7 +71,7 @@ export default class Player extends Component {
   }
 
   handlePlayPause = async () => {
-    let { 
+    const { 
       isPlaying, 
       playbackInstance 
     } = this.state;
@@ -87,13 +89,14 @@ export default class Player extends Component {
   handlePreviousTrack = async () => {
     let {
       playbackInstance,
-      currentTrack
+      currentTrack,
+      playlist
     } = this.state;
 
     if (playbackInstance) {
       await playbackInstance.unloadAsync();
 
-      currentTrack > 0
+      0 < currentTrack  && currentTrack < playlist.length - 1
         ? currentTrack -= 1
         : currentTrack = 0;
       
@@ -109,13 +112,14 @@ export default class Player extends Component {
   handleNextTrack = async () => {
     let {
       playbackInstance,
-      currentTrack
+      currentTrack,
+      playlist
     } = this.state;
 
     if (playbackInstance) {
       await playbackInstance.unloadAsync();
 
-      currentTrack < HamletPlaylist.length - 1
+      currentTrack < playlist.length - 1
         ? currentTrack += 1
         : currentTrack = 0;
       
@@ -131,80 +135,126 @@ export default class Player extends Component {
   renderFileInfo() {
     const {
       playbackInstance,
-      currentTrack
+      currentTrack,
+      playlist
     } = this.state;
 
     return playbackInstance
       ? (
         <View style={styles.trackInfo}>
           <Text style={[styles.trackInfoText, styles.largeText]}>
-            {HamletPlaylist[currentTrack].title}
+            {playlist[currentTrack].title}
           </Text>
           <Text style={[styles.trackInfoText, styles.smallText]}>
-            {HamletPlaylist[currentTrack].author}
+            {playlist[currentTrack].author}
           </Text>
-          <Text style={[styles.trackInfoText, styles.smallText]}>
-            {HamletPlaylist[currentTrack].source}
+          <Text style={[styles.trackInfoText, styles.regularText]}>
+            {playlist[currentTrack].source}
           </Text>
         </View>
       )
-      : null;
+      : (
+        <View style={styles.trackInfo}>
+          <Text style={[styles.trackInfoText, styles.largeText]}>
+            Title
+          </Text>
+          <Text style={[styles.trackInfoText, styles.smallText]}>
+            Artist
+          </Text>
+          <Text style={[styles.trackInfoText, styles.regularText]}>
+            Album
+          </Text>
+        </View>
+      );
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-        <Image
-          style={styles.albumCover}
-          source={{uri: '../assets/images/default-album-art.png'}}/>
+    const {
+      playbackInstance,
+      currentTrack,
+      playlist
+    } = this.state;
 
-        <View style={styles.controls}>
-          <TouchableOpacity style={styles.control} onPress={this.handlePreviousTrack}>
-            <Ionicons name='ios-skip-backward' size={Amoled.icon.large} color={Amoled.color.accent}/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.control} onPress={this.handlePlayPause}>
-            {this.state.isPlaying 
-              ? (<Ionicons name='ios-pause' size={Amoled.icon.large} color={Amoled.color.accent}/>)
-              : (<Ionicons name='ios-play-circle' size={Amoled.icon.large} color={Amoled.color.accent}/>)}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.control} onPress={this.handleNextTrack}>
-            <Ionicons name='ios-skip-forward' size={Amoled.icon.large} color={Amoled.color.accent}/>
-          </TouchableOpacity>
+    return playbackInstance
+      ? (
+        <View style={styles.container}>
+          <Image
+            style={styles.albumCover}
+            source={{uri: playlist[currentTrack].imageSource}}/>
+
+          <View style={styles.controls}>
+            <TouchableOpacity style={styles.control} onPress={this.handlePreviousTrack}>
+              <Ionicons name='ios-skip-backward' size={theme.icon.large} color={theme.color.accent}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.control} onPress={this.handlePlayPause}>
+              {this.state.isPlaying 
+                ? (<Ionicons name='ios-pause' size={theme.icon.large} color={theme.color.accent}/>)
+                : (<Ionicons name='ios-play-circle' size={theme.icon.large} color={theme.color.accent}/>)}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.control} onPress={this.handleNextTrack}>
+              <Ionicons name='ios-skip-forward' size={theme.icon.large} color={theme.color.accent}/>
+            </TouchableOpacity>
+          </View>
+          {this.renderFileInfo()}
         </View>
-        {this.renderFileInfo()}
-      </View>
-    )
+      )
+      : (
+        <View style={styles.container}>
+          <Image
+            style={styles.albumCover}
+            source={(require('../assets/images/default-album-art.png'))}/>
+
+          <View style={styles.controls}>
+            <TouchableOpacity style={styles.control} onPress={this.handlePreviousTrack}>
+              <Ionicons name='ios-skip-backward' size={theme.icon.large} color={theme.color.accent}/>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.control} onPress={this.handlePlayPause}>
+              {this.state.isPlaying 
+                ? (<Ionicons name='ios-pause' size={theme.icon.large} color={theme.color.accent}/>)
+                : (<Ionicons name='ios-play-circle' size={theme.icon.large} color={theme.color.accent}/>)}
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.control} onPress={this.handleNextTrack}>
+              <Ionicons name='ios-skip-forward' size={theme.icon.large} color={theme.color.accent}/>
+            </TouchableOpacity>
+          </View>
+          {this.renderFileInfo()}
+        </View>
+      );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Amoled.color.primary,
+    backgroundColor: theme.color.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   albumCover: {
-    width: 250,
-    height: 250
+    width: 300,
+    height: 300
   },
   trackInfo: {
     padding: 30,
-    backgroundColor: Amoled.color.primary,
+    backgroundColor: theme.color.primary,
   },
   trackInfoText: {
+    padding: 2,
     textAlign: 'center',
     flexWrap: 'wrap',
-    color: Amoled.color.onPrimary,
+    color: theme.color.onPrimary,
   },
   largeText: {
-    fontSize: Amoled.font.large
+    fontSize: theme.font.large
+  },
+  regularText: {
+    fontSize: theme.font.regular
   },
   smallText: {
-    fontSize: Amoled.font.regular
+    fontSize: theme.font.small
   },
   controls: {
-    padding: 10,
+    paddingTop: 30,
     flexDirection: 'row'
   },
   control: {

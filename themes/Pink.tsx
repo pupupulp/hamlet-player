@@ -1,10 +1,10 @@
 export default {
   color: {
-    primary: 'black',
-    secondary: '#262626',
-    accent: '#404040',
-    onPrimary: '#A6A6A6',
-    onSecondary: '#737373'
+    primary: '#F2F2F2',
+    secondary: '#D93030',
+    accent: '#F28080',
+    onPrimary: '#F2B3B3',
+    onSecondary: '#F28080'
   },
   font: {
     large: 26,
